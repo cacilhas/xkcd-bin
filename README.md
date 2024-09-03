@@ -5,7 +5,7 @@ Just a CLI to show [Xkcd.com][] comics in terminal.
 
 ## Note
 
-If you want a library to build Xkcd into your project, please head to
+If you’re looking for a library to build Xkcd into your project, please head to
 [Rusty Xkcd][] or [xkcd-rs][].
 
 
