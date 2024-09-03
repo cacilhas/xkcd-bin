@@ -1,7 +1,14 @@
 [package]
-name = "xkcd-bin"
-version = "0.1.0"
-edition = "2021"
+name        = "xkcd-bin"
+version     = "0.1.0"
+authors     = ["Rodrigo Montegasppα Cacilhας <montegasppa@cacilhas.info>"]
+license     = "BSD-3-Clause"
+readme      = "README.md"
+homepage    = "https://crates.io/crates/xkcd-bin"
+repository  = "https://github.com/cacilhas/xkcd-bin"
+keywords    = ["cli", "xkcd"]
+description = "Just a CLI to show xkcd.com comics in terminal."
+edition     = "2021"
 
 [profile.release]
 opt-level = "s"
