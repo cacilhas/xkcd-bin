@@ -1,0 +1,7 @@
+.*
+*~
+*.bak
+/Cargo.lock
+/target
+
+!.gitignore
