@@ -1,6 +1,6 @@
 # xkcd-bin
 
-Just a CLI to show [Xkcd.com][] comics in terminal.
+Just a CLI to show [Xkcd.com][] comics in [Kitty Terminal][].
 
 
 ## Note
@@ -15,6 +15,7 @@ If you’re looking for a library to build Xkcd into your project, please head t
 - [Copyright 2024 Rodrigo Cacilhας &lt;montegasppa@cacilhas.info&gt;][]
 
 [Copyright 2024 Rodrigo Cacilhας &lt;montegasppa@cacilhas.info&gt;]: https://github.com/cacilhas/xkcd-bin/blob/master/COPYING
+[Kitty Terminal]: https://sw.kovidgoyal.net/kitty/
 [Rusty Xkcd]: https://crates.io/crates/rusty_xkcd
 [Xkcd.com]: https://xkcd.com/
 [xkcd-rs]: https://crates.io/crates/xkcd
