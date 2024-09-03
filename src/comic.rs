@@ -1,6 +1,5 @@
 use chrono::{NaiveDate, Utc};
 use eyre::Result;
-use kitty_image::Format;
 use random::Source;
 use serde::Deserialize;
 
@@ -14,7 +13,6 @@ pub struct Comic {
     pub link: String,
     pub title: String,
     pub transcript: String,
-    pub format: Format,
 }
 
 
@@ -57,11 +55,6 @@ impl From<RawComic> for Comic {
             transcript => transcript.to_owned(),
         };
 
-        let fmt = match &value.img {
-            link if link.ends_with(".png") => Format::Png,
-            _ => Format::default(),
-        };
-
         let link = match &value.link {
             link if link.is_empty() => format!("https://xkcd.com/{}", value.num),
             link => link.to_owned(),
@@ -70,7 +63,6 @@ impl From<RawComic> for Comic {
         Self {
             title, transcript, link,
             date: value.date().unwrap_or(NaiveDate::MIN),
-            format: fmt,
             num: value.num,
             img: value.img,
         }

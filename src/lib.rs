@@ -1,8 +1,11 @@
 mod comic;
 
-use comic::Comic;
+use std::io::Cursor;
+
+pub use comic::Comic;
 use eyre::Result;
-use kitty_image::{Action, ActionPut, ActionTransmission, Command, Medium, WrappedCommand};
+use image::ImageFormat;
+use kitty_image::{Action, ActionPut, ActionTransmission, Command, Format, Medium, WrappedCommand};
 
 
 pub async fn fetch_comic(num: u32) -> Result<()> {
@@ -32,7 +35,7 @@ async fn show_comic(comic: &Comic) -> Result<()> {
 
     let action = Action::TransmitAndDisplay(
         ActionTransmission {
-            format: comic.format,
+            format: Format::Png,
             medium: Medium::Direct,
             ..Default::default()
         },
@@ -52,5 +55,15 @@ async fn show_comic(comic: &Comic) -> Result<()> {
 
 async fn download_img(url: &str) -> Result<Vec<u8>> {
     let resp = reqwest::get(url).await?;
-    Ok(resp.bytes().await?.iter().map(|b| *b).collect())
+    let payload = resp.bytes().await?.iter().map(|b| *b).collect();
+
+    if url.ends_with(".png") {
+        return Ok(payload);
+    }
+
+    let mut cursor = Cursor::new(payload);
+    let image = image::load(&mut cursor, ImageFormat::Jpeg)?;
+    let mut res: Vec<u8> = Vec::new();
+    image.write_to(&mut Cursor::new(&mut res), ImageFormat::Png)?;
+    Ok(res)
 }
