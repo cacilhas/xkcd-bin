@@ -23,11 +23,11 @@ pub async fn fetch_random() -> Result<()> {
 
 async fn show_comic(comic: &Comic) -> Result<()> {
     println!(
-        "\x1b[33;1m{}\x1b[0m \x1b[31m{}\x1b[0m",
+        "\x1b[33;1m{}\x1b[0m \x1b[31m{}\x1b[0m\n",
         &comic.title,
         &comic.date.format("%Y-%m-%d"),
     );
-    println!("{}", &comic.transcript);
+    println!("\x1b[37;40m{}\x1b[0m\n", &comic.transcript);
     let img = download_img(&comic.img).await?;
 
     let action = Action::TransmitAndDisplay(
@@ -36,12 +36,16 @@ async fn show_comic(comic: &Comic) -> Result<()> {
             medium: Medium::Direct,
             ..Default::default()
         },
-        ActionPut::default(),
+        ActionPut {
+            move_cursor: true,
+            ..Default::default()
+        }
     );
     let mut command = Command::new(action);
     command.payload = img.into();
     let command = WrappedCommand::new(command);
     command.send_chunked(&mut std::io::stdout())?;
+    println!("\n{}", &comic.link);
 
     Ok(())
 }

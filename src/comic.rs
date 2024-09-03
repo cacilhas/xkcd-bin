@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{NaiveDate, Utc};
 use eyre::Result;
 use kitty_image::Format;
 use random::Source;
@@ -30,7 +30,7 @@ impl Comic {
     }
 
     pub async fn random() -> Result<Self> {
-        let mut rnd = random::default(32);
+        let mut rnd = random::default(Utc::now().timestamp_millis() as u64);
         let latest = fetch_comic(None).await?;
         let num = (rnd.read::<u32>() % latest.num) + 1;
         let comic = fetch_comic(Some(num)).await?;
