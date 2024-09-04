@@ -6,7 +6,7 @@ Just a CLI to show [Xkcd.com][] comics in [Kitty Terminal][].
 ## Installation
 
 ```sh
-cargo install xkcd-bin
+cargo +nightly install xkcd-bin
 ```
 
 
