@@ -11,6 +11,9 @@ async fn main() -> Result<()> {
     let args = Args::parse();
     let params = Params::from(&args)?;
     if args.open {
+        eprintln!("--open is deprecated, use --browse instead")
+    }
+    if args.browse || args.open {
         match params {
             Params::Latest => Comic::latest().await?.open()?,
             Params::Random => Comic::random().await?.open()?,
@@ -39,8 +42,10 @@ struct Args {
     #[arg(help = "comic number | latest | random")]
     num: Option<String>,
 
-    #[arg(short, long, name = "OPEN ON BROWSER", action = ArgAction::SetTrue)]
+    #[arg(short, long, action = ArgAction::SetTrue, help = "deprecated, use --browse instead")]
     open: bool,
+    #[arg(short, long, action = ArgAction::SetTrue, help = "open comic in the default web browser")]
+    browse: bool,
 }
 
 #[derive(Debug)]
