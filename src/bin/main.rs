@@ -5,6 +5,8 @@ use clap::{ArgAction, Parser};
 use eyre::Result;
 use xkcd_bin::Comic;
 
+const BEST_EVER: u32 = 162;
+
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -35,11 +37,11 @@ async fn main() -> Result<()> {
 #[derive(Debug, Parser)]
 #[command(
     author = "Montegasppα Cacilhας <montegasppa@cacilhas.info>",
-    about = "Fetches xkcd.com comics",
-    name ="xkcd",
+    about = "Display Xkcd.com comics in Kitty Terminal or in the default web browser.",
+    name = "xkcd",
 )]
 struct Args {
-    #[arg(help = "comic number | latest | random")]
+    #[arg(help = "comic number | \"latest\" | \"random\"")]
     num: Option<String>,
 
     #[arg(short, long, action = ArgAction::SetTrue, help = "deprecated, use --browse instead")]
@@ -58,10 +60,13 @@ enum Params {
 impl Params {
 
     fn from(args: &Args) -> Result<Self> {
-
-        match &args.num {
-            Some(num) if num == "latest" => Ok(Params::Latest),
-            Some(num) if num == "random" => Ok(Params::Random),
+        let num = args.num.to_owned().map(|num| num.to_lowercase());
+        match num {
+            Some(num) if num == "latest"    => Ok(Params::Latest),
+            Some(num) if num == "random"    => Ok(Params::Random),
+            Some(num) if num == "best"      => Ok(Params::Num(BEST_EVER)),
+            Some(num) if num == "best-ever" => Ok(Params::Num(BEST_EVER)),
+            Some(num) if num == "best_ever" => Ok(Params::Num(BEST_EVER)),
             Some(num) => {
                 let num: u32 = num.parse()?;
                 Ok(Params::Num(num))
