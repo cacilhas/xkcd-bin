@@ -54,9 +54,10 @@ impl Comic {
         );
         println!("\x1b[37;40m{}\x1b[0m\n", &self.transcript);
         let img = download_img(&self.img).await?;
+        let height = (img.height() / 12 as u32).min(20);
         let config = Config {
             absolute_offset: false,
-            height: Some(20),
+            height: Some(height),
             restore_cursor: false,
             ..Default::default()
         };
