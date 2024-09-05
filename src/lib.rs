@@ -3,7 +3,7 @@ use eyre::Result;
 use image::DynamicImage;
 use random::Source;
 use serde::Deserialize;
-use viuer::Config;
+use viuer::{Config, KittySupport};
 
 
 #[derive(Debug)]
@@ -43,6 +43,10 @@ impl Comic {
     }
 
     pub async fn render(&self) -> Result<()> {
+        if !viuer::is_iterm_supported() && viuer::get_kitty_support() == KittySupport::None {
+            return self.open();
+        }
+
         println!(
             "\x1b[33;1m{}\x1b[0m \x1b[31m{}\x1b[0m\n",
             &self.title,
