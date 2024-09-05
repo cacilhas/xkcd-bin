@@ -13,7 +13,7 @@ async fn main() -> Result<()> {
     let args = Args::parse();
     let params = Params::from(&args)?;
     if args.open {
-        eprintln!("--open is deprecated, use --browse instead")
+        eprintln!("\x1b[31m--open\x1b[0m is deprecated, use \x1b[32;1m--browse\x1b[0m instead")
     }
     let comic = match params {
         Params::Latest => Comic::latest().await?,
