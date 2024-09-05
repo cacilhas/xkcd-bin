@@ -55,7 +55,7 @@ async fn show_comic(comic: &Comic) -> Result<()> {
 
 async fn download_img(url: &str) -> Result<Vec<u8>> {
     let resp = reqwest::get(url).await?;
-    let payload = resp.bytes().await?.iter().map(|b| *b).collect();
+    let payload = resp.bytes().await?.iter().copied().collect();
 
     if url.ends_with(".png") {
         return Ok(payload);
