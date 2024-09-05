@@ -9,7 +9,6 @@ use kitty_image::{
     ActionTransmission,
     Command,
     Format,
-    Medium,
     WrappedCommand,
 };
 use random::Source;
@@ -64,7 +63,6 @@ impl Comic {
         let action = Action::TransmitAndDisplay(
             ActionTransmission {
                 format: Format::Png,
-                medium: Medium::Direct,
                 ..Default::default()
             },
             ActionPut {
