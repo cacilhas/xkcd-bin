@@ -15,19 +15,15 @@ async fn main() -> Result<()> {
     if args.open {
         eprintln!("--open is deprecated, use --browse instead")
     }
+    let comic = match params {
+        Params::Latest => Comic::latest().await?,
+        Params::Random => Comic::random().await?,
+        Params::Num(num) => Comic::fetch(num).await?,
+    };
     if args.browse || args.open {
-        match params {
-            Params::Latest => Comic::latest().await?.open()?,
-            Params::Random => Comic::random().await?.open()?,
-            Params::Num(num) => Comic::fetch(num).await?.open()?,
-        }
-
+        comic.open()?;
     } else {
-        match params {
-            Params::Latest => xkcd_bin::fetch_latest().await?,
-            Params::Random => xkcd_bin::fetch_random().await?,
-            Params::Num(num) => xkcd_bin::fetch_comic(num).await?,
-        }
+        comic.render().await?;
     }
 
     Ok(())
