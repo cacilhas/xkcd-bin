@@ -1,18 +1,9 @@
-use std::io::Cursor;
-
 use chrono::{NaiveDate, Utc};
 use eyre::Result;
-use image::ImageFormat;
-use kitty_image::{
-    Action,
-    ActionPut,
-    ActionTransmission,
-    Command,
-    Format,
-    WrappedCommand,
-};
+use image::DynamicImage;
 use random::Source;
 use serde::Deserialize;
+use viuer::Config;
 
 
 #[derive(Debug)]
@@ -59,21 +50,13 @@ impl Comic {
         );
         println!("\x1b[37;40m{}\x1b[0m\n", &self.transcript);
         let img = download_img(&self.img).await?;
-
-        let action = Action::TransmitAndDisplay(
-            ActionTransmission {
-                format: Format::Png,
-                ..Default::default()
-            },
-            ActionPut {
-                move_cursor: true,
-                ..Default::default()
-            }
-        );
-        let mut command = Command::new(action);
-        command.payload = img.into();
-        let command = WrappedCommand::new(command);
-        command.send_chunked(&mut std::io::stdout())?;
+        let config = Config {
+            absolute_offset: false,
+            height: Some(20),
+            restore_cursor: false,
+            ..Default::default()
+        };
+        viuer::print(&img, &config)?;
         println!("\n{}", &self.link);
 
         Ok(())
@@ -144,17 +127,9 @@ async fn fetch_comic(num: Option<u32>) -> Result<RawComic> {
     Ok(comic)
 }
 
-async fn download_img(url: &str) -> Result<Vec<u8>> {
+
+async fn download_img(url: &str) -> Result<DynamicImage> {
     let resp = reqwest::get(url).await?;
-    let payload = resp.bytes().await?.iter().copied().collect();
-
-    if url.ends_with(".png") {
-        return Ok(payload);
-    }
-
-    let mut cursor = Cursor::new(payload);
-    let image = image::load(&mut cursor, ImageFormat::Jpeg)?;
-    let mut res: Vec<u8> = Vec::new();
-    image.write_to(&mut Cursor::new(&mut res), ImageFormat::Png)?;
-    Ok(res)
+    let payload = resp.bytes().await?.iter().copied().collect::<Vec<u8>>();
+    Ok(image::load_from_memory(&payload)?)
 }
