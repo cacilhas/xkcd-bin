@@ -2,7 +2,7 @@ extern crate clap;
 extern crate tokio;
 
 use clap::{ArgAction, Parser};
-use eyre::Result;
+use eyre::{eyre, Result};
 use xkcd_bin::Comic;
 
 const BEST_EVER: u32 = 162;
@@ -11,16 +11,12 @@ const BEST_EVER: u32 = 162;
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
-    let params = Params::from(&args)?;
-    if args.open {
-        eprintln!("\x1b[31m--open\x1b[0m is deprecated, use \x1b[32;1m--browse\x1b[0m instead")
-    }
-    let comic = match params {
+    let comic = match Params::from(&args)? {
         Params::Latest => Comic::latest().await?,
         Params::Random => Comic::random().await?,
         Params::Num(num) => Comic::fetch(num).await?,
     };
-    if args.browse || args.open {
+    if args.browse {
         comic.open()?;
     } else {
         comic.render().await?;
@@ -31,18 +27,14 @@ async fn main() -> Result<()> {
 
 
 #[derive(Debug, Parser)]
-#[command(
-    author = "Montegasppα Cacilhας <montegasppa@cacilhas.info>",
-    about = "Display Xkcd.com comics in Kitty Terminal or in the default web browser.",
-    name = "xkcd",
-)]
+#[command(name = "xkcd", author, about, version)]
 struct Args {
-    #[arg(help = "comic number | \"latest\" | \"random\"")]
+    /// comic number | "latest" | "random"
+    #[arg()]
     num: Option<String>,
 
-    #[arg(short, long, action = ArgAction::SetTrue, help = "deprecated, use --browse instead")]
-    open: bool,
-    #[arg(short, long, action = ArgAction::SetTrue, help = "open comic in the default web browser")]
+    /// open comic in the default web browser
+    #[arg(short, long, action = ArgAction::SetTrue)]
     browse: bool,
 }
 
@@ -64,7 +56,7 @@ impl Params {
             Some(num) if num == "best-ever" => Ok(Params::Num(BEST_EVER)),
             Some(num) if num == "best_ever" => Ok(Params::Num(BEST_EVER)),
             Some(num) => {
-                let num: u32 = num.parse()?;
+                let num: u32 = num.parse().map_err(|_| eyre!("number expected, got {}", num))?;
                 Ok(Params::Num(num))
             }
             None => Ok(Params::Latest),
